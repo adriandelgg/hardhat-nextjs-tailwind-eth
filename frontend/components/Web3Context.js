@@ -1,8 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 
 export const Web3Context = createContext();
-const oneEther = ethers.BigNumber.from('1000000000000000000');
 
 const Web3Provider = ({ children }) => {
 	const [contract, setContract] = useState(null);
@@ -18,8 +16,9 @@ const Web3Provider = ({ children }) => {
 	});
 
 	function newAccount(accounts) {
-		setContract(contract.connect(provider.getSigner(accounts[0])));
-		setAccount(accounts[0]);
+		const signer = provider.getSigner(accounts[0]);
+		setContract(contract.connect(signer));
+		setAccount(signer._address);
 	}
 
 	// Listens for network changes to reload the page
@@ -34,14 +33,12 @@ const Web3Provider = ({ children }) => {
 	return (
 		<Web3Context.Provider
 			value={{
-				ethers,
 				provider,
 				setProvider,
 				contract,
 				setContract,
 				account,
-				setAccount,
-				oneEther
+				setAccount
 			}}
 		>
 			{children}
